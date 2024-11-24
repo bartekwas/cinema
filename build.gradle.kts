@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
     application
 }
 
@@ -13,9 +14,13 @@ repositories {
 dependencies {
     implementation("io.ktor:ktor-server-core:3.0.1")
     implementation("io.ktor:ktor-server-netty:3.0.1")
+    implementation("io.ktor:ktor-server-auth:3.0.1")
+    implementation("io.ktor:ktor-server-auth-jwt:3.0.1")
     implementation("io.ktor:ktor-server-content-negotiation:3.0.1")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("io.insert-koin:koin-ktor:4.0.0")
+    implementation("io.insert-koin:koin-core:4.0.0")
+    implementation("com.auth0:java-jwt:4.4.0")
 
     implementation("ch.qos.logback:logback-classic:1.4.11")
 

@@ -1,8 +1,10 @@
 package com.bwasik
 
+import com.bwasik.koin.authModule
 import com.bwasik.koin.userModule
-import com.bwasik.plugins.installRouting
+import com.bwasik.plugins.installSecurity
 import com.bwasik.plugins.installSerialization
+import com.bwasik.plugins.routing.installRouting
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -16,9 +18,11 @@ fun main() {
 }
 
 fun Application.setup() {
-    installSerialization()
     install(Koin) {
         modules(userModule)
+        modules(authModule)
     }
+    installSerialization()
+    installSecurity()
     installRouting()
 }

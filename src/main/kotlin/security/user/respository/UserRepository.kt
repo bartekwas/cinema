@@ -1,6 +1,7 @@
-package com.bwasik.user.respository
+package com.bwasik.security.user.respository
 
-import com.bwasik.user.model.User
+import com.bwasik.security.user.model.User
+import org.koin.core.component.KoinComponent
 import java.util.*
 
 class UserRepository {
@@ -11,9 +12,6 @@ class UserRepository {
 
     fun findById(id: UUID): User? =
         users.firstOrNull { it.id == id }
-
-    fun findByUsername(username: String): User? =
-        users.firstOrNull { it.username == username }
 
     fun insert(user: User): Boolean =
         users.add(user)

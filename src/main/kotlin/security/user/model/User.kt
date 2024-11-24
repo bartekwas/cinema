@@ -1,4 +1,4 @@
-package com.bwasik.user.model
+package com.bwasik.security.user.model
 
 import java.util.*
 

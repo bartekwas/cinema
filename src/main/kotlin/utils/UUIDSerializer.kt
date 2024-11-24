@@ -1,5 +1,6 @@
 package com.bwasik.utils
 
+import io.ktor.utils.io.core.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -7,6 +8,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.util.*
+import kotlin.text.toByteArray
 
 object UUIDSerializer : KSerializer<UUID> {
 
@@ -19,3 +21,6 @@ object UUIDSerializer : KSerializer<UUID> {
     override fun serialize(encoder: Encoder, value: UUID) =
         encoder.encodeString(value.toString())
 }
+
+fun String.toUUID(): UUID =
+    UUID.nameUUIDFromBytes(this.toByteArray())
