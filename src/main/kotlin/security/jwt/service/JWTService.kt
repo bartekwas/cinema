@@ -6,12 +6,14 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.bwasik.security.jwt.JWTConfig
+import com.bwasik.security.user.model.UserRole
 import io.ktor.server.auth.jwt.*
 import org.slf4j.LoggerFactory
 import java.util.*
 
 const val TOKEN_EXPIRATION_TIME = 900_000
 const val USERNAME_CLAIM = "username"
+const val ROLE_CLAIM = "ROLE"
 
 class JWTService(
     private val jwtConfig: JWTConfig,
@@ -25,11 +27,12 @@ class JWTService(
             .withIssuer(jwtConfig.issuer)
             .build()
 
-    fun createAccessToken(username: String): String =
+    fun createAccessToken(username: String, role: UserRole): String =
         JWT.create()
             .withAudience(jwtConfig.audience)
             .withIssuer(jwtConfig.issuer)
             .withClaim(USERNAME_CLAIM, username)
+            .withClaim(ROLE_CLAIM, role.name )
             .withExpiresAt(Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
             .sign(Algorithm.HMAC256(jwtConfig.secret))
 

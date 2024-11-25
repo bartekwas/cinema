@@ -34,7 +34,7 @@ class UserService(
     fun authenticate(loginRequest: LoginRequest): LoginResponse? {
         return userRepository.findById(loginRequest.username.toUUID())?.let { user ->
             if (loginRequest.password != user.password) return null
-            LoginResponse(jwtService.createAccessToken(loginRequest.username))
+            LoginResponse(jwtService.createAccessToken(user.username, user.role))
         }
     }
 
