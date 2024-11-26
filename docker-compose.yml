@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: cinema
+      POSTGRES_PASSWORD: cinema_password
+      POSTGRES_DB: cinema_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data: {}

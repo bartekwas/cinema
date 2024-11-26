@@ -26,6 +26,13 @@ dependencies {
     implementation("io.insert-koin:koin-core:4.0.0")
     implementation("com.auth0:java-jwt:4.4.0")
 
+    implementation("org.jetbrains.exposed:exposed-core:0.56.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.56.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.56.0")
+
+    // PostgreSQL driver
+    implementation("org.postgresql:postgresql:42.7.4")
+
     implementation("ch.qos.logback:logback-classic:1.4.11")
 
     testImplementation("io.ktor:ktor-server-tests:3.0.1")

@@ -1,9 +1,6 @@
 package com.bwasik
 
-import com.bwasik.koin.authModule
-import com.bwasik.koin.cinemaModule
-import com.bwasik.koin.omdbModule
-import com.bwasik.koin.userModule
+import com.bwasik.koin.*
 import com.bwasik.plugins.installSecurity
 import com.bwasik.plugins.installSerialization
 import com.bwasik.plugins.routing.installRouting
@@ -24,6 +21,7 @@ fun Application.setup() {
         modules(userModule)
         modules(authModule)
         modules(omdbModule)
+        modules(dbModule)
         modules(cinemaModule)
     }
     installSerialization()

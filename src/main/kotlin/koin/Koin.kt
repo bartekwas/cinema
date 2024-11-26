@@ -1,17 +1,16 @@
 package com.bwasik.koin
 
-import com.bwasik.cinema.service.CinemaService
+import com.bwasik.cinema.service.MovieDetailsService
+import com.bwasik.cinema.service.MovieScheduleService
 import com.bwasik.omdb.KtorClientProvider
 import com.bwasik.omdb.OmdbClient
 import com.bwasik.security.jwt.JWTConfig
 import com.bwasik.security.jwt.service.JWTService
 import com.bwasik.security.user.respository.UserRepository
 import com.bwasik.security.user.service.UserService
+import com.bwasik.utils.DatabaseFactory
 import com.bwasik.utils.envVariable
-import com.typesafe.config.ConfigFactory
-import io.ktor.server.config.*
 import org.koin.dsl.module
-import kotlin.math.sin
 
 val userModule = module {
     single { UserRepository() }
@@ -44,10 +43,28 @@ val omdbModule = module {
     }
 }
 
+val dbModule = module {
+    single {
+        DatabaseFactory(
+            url = "database.url".envVariable(),
+            driver = "database.driver".envVariable(),
+            user = "database.user".envVariable(),
+            password = "database.password".envVariable(),
+        ).apply {
+            init()
+        }
+    }
+}
+
 val cinemaModule = module {
     single {
-        CinemaService(
+        MovieDetailsService(
             omdbClient = get()
+        )
+    }
+    single {
+        MovieScheduleService(
+            dbFactory = get()
         )
     }
 }
