@@ -1,4 +1,4 @@
-package com.bwasik.plugins.routing
+package com.bwasik.security.routing
 
 import com.bwasik.security.jwt.model.http.LoginRequest
 import com.bwasik.security.jwt.model.http.LoginResponse

@@ -17,6 +17,10 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:3.0.1")
     implementation("io.ktor:ktor-server-auth-jwt:3.0.1")
     implementation("io.ktor:ktor-server-content-negotiation:3.0.1")
+    implementation("io.ktor:ktor-client-core:3.0.1")
+    implementation("io.ktor:ktor-client-cio:3.0.1")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
+
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
     implementation("io.insert-koin:koin-ktor:4.0.0")
     implementation("io.insert-koin:koin-core:4.0.0")

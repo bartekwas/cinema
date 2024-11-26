@@ -37,12 +37,4 @@ class UserService(
             LoginResponse(jwtService.createAccessToken(user.username, user.role))
         }
     }
-
-    private fun getDecodedJwt(token: String): DecodedJWT? =
-        try {
-            jwtService.jwtVerifier.verify(token)
-        } catch (e: JWTVerificationException) {
-            logger.error("Error while decoding JWT token", e)
-            null
-        }
 }

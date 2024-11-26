@@ -1,4 +1,4 @@
-package com.bwasik.plugins.routing
+package com.bwasik.security.routing
 
 import com.bwasik.plugins.requireRoles
 import com.bwasik.security.user.model.User
@@ -31,6 +31,7 @@ fun Route.userRoute(userService: UserService) {
             )
         }
 
+        // just for test purposes
         authenticate {
             requireRoles(UserRole.ADMIN) {
                 get {
