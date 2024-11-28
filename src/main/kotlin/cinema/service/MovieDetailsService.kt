@@ -8,4 +8,6 @@ class MovieDetailsService(
 
     suspend fun getMovieDetails(movieId: String) =
         omdbClient.getMovieDetails(movieId)
+
+
 }

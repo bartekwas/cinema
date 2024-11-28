@@ -1,6 +1,7 @@
 package com.bwasik.plugins.routing
 
-import com.bwasik.cinema.routing.cinemaRoute
+import com.bwasik.cinema.routing.movieDetailsRoute
+import com.bwasik.cinema.routing.movieSchedulesRoute
 import com.bwasik.cinema.service.MovieDetailsService
 import com.bwasik.cinema.service.MovieScheduleService
 import com.bwasik.security.routing.loginRoute
@@ -15,8 +16,11 @@ fun Application.installRouting() {
     val movieDetailsService: MovieDetailsService by inject()
     val movieScheduleService: MovieScheduleService by inject()
     routing {
-        loginRoute(userService)
-        userRoute(userService)
-        cinemaRoute(movieDetailsService = movieDetailsService, movieScheduleService = movieScheduleService)
+        route("api"){
+            loginRoute(userService)
+            userRoute(userService)
+            movieSchedulesRoute(movieScheduleService = movieScheduleService)
+            movieDetailsRoute(movieDetailsService = movieDetailsService)
+        }
     }
 }

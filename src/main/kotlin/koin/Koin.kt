@@ -63,8 +63,6 @@ val cinemaModule = module {
         )
     }
     single {
-        MovieScheduleService(
-            dbFactory = get()
-        )
+        MovieScheduleService()
     }
 }

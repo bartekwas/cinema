@@ -15,7 +15,7 @@ import io.ktor.server.routing.*
 import java.util.*
 
 fun Route.userRoute(userService: UserService) {
-    route("/api/user") {
+    route("/user") {
         post {
             val userRequest = call.receive<UserCreationRequest>()
             val createdUser = userService.insert(

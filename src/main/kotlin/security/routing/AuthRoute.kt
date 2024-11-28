@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
 
 fun Route.loginRoute(userService: UserService) {
-    route("/api/login") {
+    route("/login") {
         post {
             val loginRequest = call.receive<LoginRequest>()
 
