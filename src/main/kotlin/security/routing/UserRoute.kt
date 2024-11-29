@@ -19,7 +19,7 @@ fun Route.userRoute(userService: UserService) {
         post {
             val userRequest = call.receive<UserCreationRequest>()
             val createdUser = userService.insert(
-                user = userRequest.toUserModel()
+                userRequest = userRequest
             ) ?: return@post call.respond(HttpStatusCode.BadRequest)
 
             call.response.header(
@@ -35,28 +35,11 @@ fun Route.userRoute(userService: UserService) {
         authenticate {
             requireRoles(UserRole.ADMIN) {
                 get {
-                    val users = userService.findAll()
-
                     call.respond(
-                        message = users.map(User::toUserCreationResponse)
+                        message = userService.findAll()
                     )
                 }
             }
         }
     }
 }
-
-private fun UserCreationRequest.toUserModel(): User  =
-    User(
-        id = UUID.nameUUIDFromBytes(this.username.toByteArray()),
-        username = this.username,
-        password = this.password,
-        role = this.role.safeValueOf<UserRole>() ?: UserRole.USER
-    )
-
-private fun User.toUserCreationResponse(): UserCreationResponse =
-    UserCreationResponse(
-        id = this.id,
-        username = this.username,
-        role = this.role.name
-    )

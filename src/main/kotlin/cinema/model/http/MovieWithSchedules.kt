@@ -24,7 +24,7 @@ data class MovieWithSchedules(
 
 @Serializable
 data class Schedule(
-    val id: Int? = null,
+    val id: Long? = null,
     @Serializable(with = ZonedDateTimeSerializer::class)
     val dateTime: ZonedDateTime,
     @Serializable(with = BigDecimalSerializer::class)

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MovieDetailsResponse(
+data class OmdbMovieDetailsResponse(
     @SerialName("Title") val title: String,
     @SerialName("Year") val year: String,
     @SerialName("Rated") val rated: String,

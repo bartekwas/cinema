@@ -31,6 +31,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
 
+    implementation("org.mindrot:jbcrypt:0.4")
+
     // PostgreSQL driver
     implementation("org.postgresql:postgresql:42.7.4")
 

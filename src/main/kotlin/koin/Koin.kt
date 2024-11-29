@@ -1,7 +1,12 @@
 package com.bwasik.koin
 
+import com.bwasik.cinema.model.http.MovieRatingRequest
+import com.bwasik.cinema.repository.AverageRateRepository
+import com.bwasik.cinema.repository.MovieDetailsRepository
+import com.bwasik.cinema.repository.MovieSchedulesRepository
 import com.bwasik.cinema.service.MovieDetailsService
 import com.bwasik.cinema.service.MovieScheduleService
+import com.bwasik.cinema.service.RateAggregatorService
 import com.bwasik.omdb.KtorClientProvider
 import com.bwasik.omdb.OmdbClient
 import com.bwasik.security.jwt.JWTConfig
@@ -58,11 +63,28 @@ val dbModule = module {
 
 val cinemaModule = module {
     single {
-        MovieDetailsService(
-            omdbClient = get()
+        MovieSchedulesRepository
+    }
+    single {
+        MovieDetailsRepository
+    }
+    single {
+        AverageRateRepository
+    }
+    single {
+        RateAggregatorService(
+            averageRateRepository = get()
         )
     }
     single {
-        MovieScheduleService()
+        MovieDetailsService(
+            omdbClient = get(),
+            movieDetailsRepository = get()
+        )
+    }
+    single {
+        MovieScheduleService(
+            movieScheduleRepository = get()
+        )
     }
 }

@@ -1,7 +1,7 @@
 package com.bwasik.utils
 
-import com.bwasik.cinema.model.db.Movies
-import com.bwasik.cinema.model.db.Schedules
+import com.bwasik.cinema.model.db.*
+import com.bwasik.security.user.model.db.Users
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -22,7 +22,7 @@ class DatabaseFactory(
             password = password
         )
         transaction {
-            SchemaUtils.create(Movies, Schedules)
+            SchemaUtils.create(Users, Movies, Schedules, Ratings, AverageRate)
         }
         logger.info("Connected to PostgreSQL Database")
     }

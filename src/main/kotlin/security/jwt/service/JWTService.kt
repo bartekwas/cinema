@@ -13,6 +13,7 @@ import java.util.*
 
 const val TOKEN_EXPIRATION_TIME = 900_000
 const val USERNAME_CLAIM = "username"
+const val USERID_CLAIM = "user_id"
 const val ROLE_CLAIM = "ROLE"
 
 class JWTService(
@@ -27,12 +28,13 @@ class JWTService(
             .withIssuer(jwtConfig.issuer)
             .build()
 
-    fun createAccessToken(username: String, role: UserRole): String =
+    fun createAccessToken(username: String, role: UserRole, userId: UUID): String =
         JWT.create()
             .withAudience(jwtConfig.audience)
             .withIssuer(jwtConfig.issuer)
             .withClaim(USERNAME_CLAIM, username)
-            .withClaim(ROLE_CLAIM, role.name )
+            .withClaim(USERID_CLAIM, userId.toString())
+            .withClaim(ROLE_CLAIM, role.name)
             .withExpiresAt(Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
             .sign(Algorithm.HMAC256(jwtConfig.secret))
 
