@@ -1,28 +1,15 @@
 package com.bwasik.cinema.repository
 
-import com.bwasik.cinema.model.db.AverageRate
 import com.bwasik.cinema.model.db.Ratings
-import com.bwasik.cinema.model.http.InternalRating
 import com.bwasik.cinema.model.http.MovieRatingRequest
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
 
 class MovieDetailsRepository {
-
-    fun getAverageRate(id: String): InternalRating? {
-        return transaction {
-            AverageRate
-                .select { AverageRate.movieId eq id }
-                .map { row ->
-                    InternalRating(
-                        value = row[AverageRate.rate].toString()+"/10",
-                        ratesCount = row[AverageRate.count]
-                    )
-                }
-                .singleOrNull()
-        }
-    }
 
     fun postMovieRatings(movieRatingRequest: MovieRatingRequest, principalId: String) {
         transaction {

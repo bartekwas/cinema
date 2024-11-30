@@ -10,14 +10,24 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.ktor.plugin.Koin
+import org.slf4j.LoggerFactory
 
+private val logger = LoggerFactory.getLogger("Application.Kt")
 
 fun main() {
-    embeddedServer(Netty, port = 8080) {
-        setup()
-    }.start(wait = true)
+    try {
+        embeddedServer(
+            Netty,
+            port = System.getenv("PORT")?.toInt() ?: 8080,
+            module = Application::cinemaApp,
+        ).start(wait = true)
+    } catch (t: Throwable) {
+        logger.error(t.message, t)
+        throw t
+    }
 }
-fun Application.setup() {
+
+fun Application.cinemaApp() {
     install(Koin) {
         modules(userModule)
         modules(authModule)
@@ -32,3 +42,4 @@ fun Application.setup() {
     installSecurity()
     installRouting()
 }
+

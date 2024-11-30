@@ -2,8 +2,11 @@ import com.bwasik.cinema.model.db.AverageRate
 import com.bwasik.cinema.model.db.Movies
 import com.bwasik.cinema.model.db.Ratings
 import com.bwasik.cinema.model.db.Schedules
+import com.bwasik.cinema.model.http.MovieRatingRequest
+import com.bwasik.cinema.repository.AverageRateRepository
 import com.bwasik.cinema.repository.MovieDetailsRepository
 import com.bwasik.cinema.service.MovieDetailsService
+import com.bwasik.cinema.service.RateAggregatorService
 import com.bwasik.omdb.KtorClientProvider
 import com.bwasik.omdb.OmdbClient
 import com.bwasik.security.user.model.db.Users
@@ -12,6 +15,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -21,9 +25,11 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.math.BigDecimal
+import java.util.UUID
 
 @Testcontainers
-class MovieDetailsServiceE2ETest {
+class MovieDetailsServiceIntegrationTest {
 
     companion object {
         private const val REDIS_PORT = 6379
@@ -46,6 +52,7 @@ class MovieDetailsServiceE2ETest {
     private lateinit var redisConnection: StatefulRedisConnection<String, String>
     private lateinit var wireMockServer: WireMockServer
     private lateinit var movieDetailsService: MovieDetailsService
+    private lateinit var averageRateRepository: AverageRateRepository
 
     @BeforeEach
     fun setUp() {
@@ -77,13 +84,14 @@ class MovieDetailsServiceE2ETest {
         // Initialize dependencies
         val clientProvider = KtorClientProvider()
         val cache = RedisCache(redisConnection)
-        val movieDetailsRepository = MovieDetailsRepository() // Ensure proper initialization here
+        val movieDetailsRepository = MovieDetailsRepository()
+        averageRateRepository = AverageRateRepository()
 
         // Initialize OmdbClient with WireMock URL and dummy API key
         val omdbClient = OmdbClient(clientProvider, "http://localhost:8080", "test_api_key")
 
         // Initialize service
-        movieDetailsService = MovieDetailsService(omdbClient, movieDetailsRepository, cache)
+        movieDetailsService = MovieDetailsService(omdbClient, movieDetailsRepository, averageRateRepository, cache)
     }
 
     @AfterEach
@@ -96,8 +104,7 @@ class MovieDetailsServiceE2ETest {
     }
 
     @Test
-    fun `should fetch movie details, cache them, and store ratings in DB`() = runBlocking {
-        // Arrange
+    fun `should save rating and aggregate it later`() = runBlocking {
         val movieId = "tt1234567"
         val omdbResponse = """
             {
@@ -118,19 +125,17 @@ class MovieDetailsServiceE2ETest {
                     .withBody(omdbResponse))
         )
 
-        // Act
-        val response1 = movieDetailsService.getMovieDetails(movieId) // Cache miss
-        val response2 = movieDetailsService.getMovieDetails(movieId) // Cache hit
 
-        // Assert
+        val response1 = movieDetailsService.getMovieDetails(movieId)
+        movieDetailsService.postMovieRatings(
+            movieRatingRequest = MovieRatingRequest(movieId, BigDecimal(8.5)),
+            UUID.randomUUID()
+        )
+        averageRateRepository.calculateAndSaveAverageRates()
+        val response2 = movieDetailsService.getMovieDetails(movieId)
+
         Assertions.assertEquals("Test Movie", response1.title)
-        Assertions.assertEquals("Test Movie", response2.title)
-
-        // Verify cache and DB
-        val cachedData = redisConnection.sync().get(movieId)
-        Assertions.assertNotNull(cachedData, "Data should be cached in Redis")
-
-        // Validate WireMock was called only once (due to caching)
-        WireMock.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/?i=$movieId")))
+        Assertions.assertEquals(0, response1.ratings.size)
+        Assertions.assertEquals(1, response2.ratings.size)
     }
 }

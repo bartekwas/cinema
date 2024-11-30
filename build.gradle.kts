@@ -7,21 +7,27 @@ plugins {
 group = "com.bwasik"
 version = "1.0-SNAPSHOT"
 
+
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("io.ktor:ktor-server-core:3.0.1")
-    implementation("io.ktor:ktor-server-netty:3.0.1")
-    implementation("io.ktor:ktor-server-auth:3.0.1")
-    implementation("io.ktor:ktor-server-auth-jwt:3.0.1")
-    implementation("io.ktor:ktor-server-content-negotiation:3.0.1")
-    implementation("io.ktor:ktor-client-core:3.0.1")
-    implementation("io.ktor:ktor-client-cio:3.0.1")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
+val ktorVersion = "3.0.1"
 
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
+dependencies {
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-plugins:$ktorVersion")
+    implementation("io.ktor:ktor-server-openapi:$ktorVersion")
+    implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.54")
+
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.insert-koin:koin-ktor:4.0.0")
     implementation("io.insert-koin:koin-core:4.0.0")
     implementation("com.auth0:java-jwt:4.4.0")
@@ -40,15 +46,20 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testImplementation("org.testcontainers:testcontainers:1.20.4")
     testImplementation("io.mockk:mockk:1.13.13")
-    testImplementation("io.insert-koin:koin-test:4.0.0")
-    testImplementation("io.insert-koin:koin-ktor:4.0.0")
+    implementation("io.insert-koin:koin-ktor:$ktorVersion")
+    testImplementation("io.insert-koin:koin-test:$ktorVersion")
+    testImplementation("io.insert-koin:koin-ktor:$ktorVersion")
     testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
-    testImplementation("io.kotest.extensions:kotest-extensions-wiremock:3.0.1")
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
-    testImplementation("io.ktor:ktor-server-test-host:2.1.0")
+    testImplementation("io.kotest.extensions:kotest-extensions-wiremock:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.10")
+    testImplementation("io.ktor:ktor-server-tests:2.3.13")
     testImplementation("io.kotest:kotest-runner-junit5:5.5.5")
     testImplementation("io.kotest:kotest-assertions-core:5.5.5")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    implementation("io.kotest:kotest-extensions-jvm:5.9.1")
+
     testImplementation(kotlin("test"))
 }
 

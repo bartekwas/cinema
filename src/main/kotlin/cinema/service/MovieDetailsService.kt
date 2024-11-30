@@ -2,6 +2,7 @@ package com.bwasik.cinema.service
 
 import com.bwasik.cinema.model.http.MovieDetailsResponse
 import com.bwasik.cinema.model.http.MovieRatingRequest
+import com.bwasik.cinema.repository.AverageRateRepository
 import com.bwasik.cinema.repository.MovieDetailsRepository
 import com.bwasik.omdb.OmdbClient
 import com.bwasik.utils.RedisCache
@@ -16,6 +17,7 @@ private val CACHE_TIME = 12.hours.inWholeSeconds
 class MovieDetailsService(
     private val omdbClient: OmdbClient,
     private val movieDetailsRepository: MovieDetailsRepository,
+    private val averageRateRepository: AverageRateRepository,
     private val cache: RedisCache,
 ) {
 
@@ -25,7 +27,7 @@ class MovieDetailsService(
                 omdbClient.getMovieDetails(movieId)
             }
         }
-        val internalRates = async { movieDetailsRepository.getAverageRate(movieId) }
+        val internalRates = async { averageRateRepository.getAverageRate(movieId) }
         MovieDetailsResponse.from(omdbDetails.await(), internalRates.await())
     }
 

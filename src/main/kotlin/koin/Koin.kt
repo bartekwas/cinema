@@ -96,6 +96,7 @@ val cinemaModule = module {
         MovieDetailsService(
             omdbClient = get(),
             movieDetailsRepository = get(),
+            averageRateRepository = get(),
             cache = get()
         )
     }

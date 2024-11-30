@@ -2,6 +2,7 @@ package com.bwasik.cinema.repository
 
 import com.bwasik.cinema.model.db.AverageRate
 import com.bwasik.cinema.model.db.Ratings
+import com.bwasik.cinema.model.http.InternalRating
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
@@ -40,6 +41,20 @@ class AverageRateRepository {
                     }
                 }
             }
+        }
+    }
+
+    fun getAverageRate(id: String): InternalRating? {
+        return transaction {
+            AverageRate
+                .select { AverageRate.movieId eq id }
+                .map { row ->
+                    InternalRating(
+                        value = row[AverageRate.rate].toString()+"/10",
+                        ratesCount = row[AverageRate.count]
+                    )
+                }
+                .singleOrNull()
         }
     }
 }

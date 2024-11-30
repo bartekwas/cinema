@@ -1,6 +1,6 @@
-import com.bwasik.cinema.model.http.ExternalRating
 import com.bwasik.cinema.model.http.InternalRating
 import com.bwasik.cinema.model.http.MovieDetailsResponse
+import com.bwasik.cinema.repository.AverageRateRepository
 import com.bwasik.cinema.repository.MovieDetailsRepository
 import com.bwasik.cinema.service.MovieDetailsService
 import com.bwasik.omdb.OmdbClient
@@ -15,10 +15,9 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.testcontainers.containers.GenericContainer
 
-class MovieDetailsServiceTest {
+class MovieDetailsServiceUnitTest {
 
     companion object {
         private const val REDIS_PORT = 6379
@@ -28,6 +27,7 @@ class MovieDetailsServiceTest {
     private lateinit var cache: RedisCache
     private lateinit var omdbClient: OmdbClient
     private lateinit var movieDetailsRepository: MovieDetailsRepository
+    private lateinit var averageRateRepository: AverageRateRepository
     private lateinit var movieDetailsService: MovieDetailsService
 
     @BeforeEach
@@ -44,8 +44,9 @@ class MovieDetailsServiceTest {
         cache = RedisCache(redisConnection) // Pass the connection to RedisCache
         omdbClient = mockk()
         movieDetailsRepository = mockk()
+        averageRateRepository = mockk()
 
-        movieDetailsService = MovieDetailsService(omdbClient, movieDetailsRepository, cache)
+        movieDetailsService = MovieDetailsService(omdbClient, movieDetailsRepository, averageRateRepository, cache)
     }
 
     @AfterEach
@@ -61,7 +62,7 @@ class MovieDetailsServiceTest {
         val expectedResponse = MovieDetailsResponse.from(omdbResponse, InternalRating("8.5", 10))
 
         coEvery { omdbClient.getMovieDetails(movieId) } returns omdbResponse
-        coEvery { movieDetailsRepository.getAverageRate(movieId) } returns averageRate
+        coEvery { averageRateRepository.getAverageRate(movieId) } returns averageRate
 
         val response1 = movieDetailsService.getMovieDetails(movieId) // Cache miss
         val response2 = movieDetailsService.getMovieDetails(movieId) // Cache hit
@@ -70,7 +71,7 @@ class MovieDetailsServiceTest {
         assertEquals(expectedResponse, response2)
 
         coVerify(exactly = 1) { omdbClient.getMovieDetails(movieId) }
-        coVerify(exactly = 2) { movieDetailsRepository.getAverageRate(movieId) }
+        coVerify(exactly = 2) { averageRateRepository.getAverageRate(movieId) }
     }
 
     @Test
@@ -91,7 +92,7 @@ class MovieDetailsServiceTest {
         val averageRate = InternalRating("8.5", 10)
 
         coEvery { omdbClient.getMovieDetails(movieId) } returns omdbResponse
-        coEvery { movieDetailsRepository.getAverageRate(movieId) } returns averageRate
+        coEvery { averageRateRepository.getAverageRate(movieId) } returns averageRate
 
         val response = movieDetailsService.getMovieDetails(movieId)
 

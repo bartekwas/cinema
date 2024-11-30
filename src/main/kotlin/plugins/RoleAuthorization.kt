@@ -23,7 +23,6 @@ val RoleBasedAuthorizationPlugin = createRouteScopedPlugin(
     val roles = pluginConfig.roles
     pluginConfig.apply{
         on(AuthenticationChecked){ call ->
-            println("roles - ${call.getRole()}")
             if(!roles.contains(call.getRole())){
                 call.respond(
                     message = HttpStatusCode.Forbidden,
