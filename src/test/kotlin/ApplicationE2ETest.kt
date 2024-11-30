@@ -1,0 +1,2 @@
+class ApplicationE2ETest {
+}
