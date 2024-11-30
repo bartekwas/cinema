@@ -4,9 +4,13 @@ import com.bwasik.cinema.model.db.Movies
 import com.bwasik.cinema.model.db.Schedules
 import com.bwasik.cinema.model.http.MovieWithSchedules
 import com.bwasik.cinema.model.http.Schedule
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.time.ZoneId
 
 class MovieSchedulesRepository {
@@ -23,13 +27,15 @@ class MovieSchedulesRepository {
                 it[title] = movieSchedule.title
             }
 
-            val existingSchedules = Schedules
-                .select { Schedules.movieId eq movieSchedule.id }
-                .map { it[Schedules.dateTime] to it[Schedules.price] }
+            val existingSchedules =
+                Schedules
+                    .select { Schedules.movieId eq movieSchedule.id }
+                    .map { it[Schedules.dateTime] to it[Schedules.price] }
 
-            val newSchedules = movieSchedule.schedules.filter { schedule ->
-                schedule.dateTime.toLocalDateTime() !in existingSchedules.map { it.first }
-            }
+            val newSchedules =
+                movieSchedule.schedules.filter { schedule ->
+                    schedule.dateTime.toLocalDateTime() !in existingSchedules.map { it.first }
+                }
 
             newSchedules.forEach { schedule ->
                 Schedules.insert {
@@ -38,7 +44,6 @@ class MovieSchedulesRepository {
                     it[price] = schedule.price
                 }
             }
-
         }
     }
 
@@ -48,55 +53,56 @@ class MovieSchedulesRepository {
         }
     }
 
-    fun getAllMoviesWithSchedules(): List<MovieWithSchedules> {
-        return transaction {
+    fun getAllMoviesWithSchedules(): List<MovieWithSchedules> =
+        transaction {
             // Fetch all movies
-            val movies = Movies.selectAll().map { movieRow ->
-                val movieId = movieRow[Movies.id]
-                val movieTitle = movieRow[Movies.title]
+            val movies =
+                Movies.selectAll().map { movieRow ->
+                    val movieId = movieRow[Movies.id]
+                    val movieTitle = movieRow[Movies.title]
 
-                // Fetch schedules for the current movie
-                val schedules = Schedules
-                    .select { Schedules.movieId eq movieId }
-                    .map { scheduleRow ->
-                        Schedule(
-                            id = scheduleRow[Schedules.id],
-                            dateTime = scheduleRow[Schedules.dateTime].atZone(ZoneId.systemDefault()),
-                            price = scheduleRow[Schedules.price]
-                        )
-                    }
+                    // Fetch schedules for the current movie
+                    val schedules =
+                        Schedules
+                            .select { Schedules.movieId eq movieId }
+                            .map { scheduleRow ->
+                                Schedule(
+                                    id = scheduleRow[Schedules.id],
+                                    dateTime = scheduleRow[Schedules.dateTime].atZone(ZoneId.systemDefault()),
+                                    price = scheduleRow[Schedules.price],
+                                )
+                            }
 
-                MovieWithSchedules(
-                    id = movieId,
-                    title = movieTitle,
-                    schedules = schedules
-                )
-            }
+                    MovieWithSchedules(
+                        id = movieId,
+                        title = movieTitle,
+                        schedules = schedules,
+                    )
+                }
             movies
         }
-    }
 
-    fun getMoviesWithSchedules(movieId: String): MovieWithSchedules? {
-        return transaction {
+    fun getMoviesWithSchedules(movieId: String): MovieWithSchedules? =
+        transaction {
             Movies.select { Movies.id eq movieId }.singleOrNull()?.let {
                 val movieTitle = it[Movies.title]
-                val schedules = Schedules
-                    .select { Schedules.movieId eq movieId }
-                    .map { scheduleRow ->
-                        Schedule(
-                            id = scheduleRow[Schedules.id],
-                            dateTime = scheduleRow[Schedules.dateTime].atZone(java.time.ZoneId.systemDefault()),
-                            price = scheduleRow[Schedules.price]
-                        )
-                    }
+                val schedules =
+                    Schedules
+                        .select { Schedules.movieId eq movieId }
+                        .map { scheduleRow ->
+                            Schedule(
+                                id = scheduleRow[Schedules.id],
+                                dateTime = scheduleRow[Schedules.dateTime].atZone(java.time.ZoneId.systemDefault()),
+                                price = scheduleRow[Schedules.price],
+                            )
+                        }
                 MovieWithSchedules(
                     id = movieId,
                     title = movieTitle,
-                    schedules = schedules
+                    schedules = schedules,
                 )
             }
         }
-    }
 
     fun deleteMovieSchedule(movieId: String) {
         transaction {

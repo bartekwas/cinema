@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
+    id("com.diffplug.spotless") version "6.25.0"
     application
 }
 
@@ -10,6 +11,13 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+}
+
+spotless {
+    kotlin {
+        ktlint("1.3.1")
+            .setEditorConfigPath(rootDir.resolve(".editorconfig"))
+    }
 }
 
 val ktorVersion = "3.0.1"

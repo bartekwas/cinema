@@ -1,7 +1,6 @@
 package com.bwasik.cinema.model.http
 
 import BigDecimalSerializer
-import com.bwasik.utils.UUIDSerializer
 import com.bwasik.utils.ZonedDateTimeSerializer
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
@@ -11,8 +10,8 @@ import java.time.ZonedDateTime
 data class MovieWithSchedules(
     val id: String,
     val title: String? = null,
-    val schedules: List<Schedule>
-){
+    val schedules: List<Schedule>,
+) {
     init {
         require(id.isNotBlank()) { "Movie ID must not be blank" }
         title?.let {
@@ -28,8 +27,8 @@ data class Schedule(
     @Serializable(with = ZonedDateTimeSerializer::class)
     val dateTime: ZonedDateTime,
     @Serializable(with = BigDecimalSerializer::class)
-    val price: BigDecimal
-){
+    val price: BigDecimal,
+) {
     init {
         require(price > BigDecimal.ZERO) { "Price must be greater than zero" }
     }

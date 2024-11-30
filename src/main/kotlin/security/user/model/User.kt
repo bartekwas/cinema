@@ -1,14 +1,15 @@
 package com.bwasik.security.user.model
 
-import java.util.*
+import java.util.UUID
 
 data class User(
     val id: UUID,
     val username: String,
     val password: String,
-    val role: UserRole
+    val role: UserRole,
 )
 
-enum class UserRole{
-    USER, ADMIN
+enum class UserRole {
+    USER,
+    ADMIN,
 }

@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Validate code style with Spotless
+        run: ./gradlew spotlessCheck
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Build the application
+        run: ./gradlew build
+
+      - name: Archive build artifacts
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: build/libs/

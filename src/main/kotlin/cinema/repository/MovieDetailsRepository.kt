@@ -10,12 +10,16 @@ import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
 
 class MovieDetailsRepository {
-
-    fun postMovieRatings(movieRatingRequest: MovieRatingRequest, principalId: String) {
+    fun postMovieRatings(
+        movieRatingRequest: MovieRatingRequest,
+        principalId: String,
+    ) {
         transaction {
-            val existingRating = Ratings.select {
-                (Ratings.movieId eq movieRatingRequest.movieId) and (Ratings.userId eq principalId)
-            }.singleOrNull()
+            val existingRating =
+                Ratings
+                    .select {
+                        (Ratings.movieId eq movieRatingRequest.movieId) and (Ratings.userId eq principalId)
+                    }.singleOrNull()
 
             if (existingRating == null) {
                 Ratings.insert {

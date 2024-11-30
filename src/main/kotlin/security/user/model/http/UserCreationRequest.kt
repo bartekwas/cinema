@@ -6,7 +6,5 @@ import kotlinx.serialization.Serializable
 data class UserCreationRequest(
     val username: String,
     val password: String,
-    val role: String
+    val role: String,
 )
-
-

@@ -9,16 +9,17 @@ import com.bwasik.omdb.model.Rating
 import com.bwasik.utils.RedisCache
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.testcontainers.containers.GenericContainer
 
 class MovieDetailsServiceUnitTest {
-
     companion object {
         private const val REDIS_PORT = 6379
     }
@@ -32,10 +33,11 @@ class MovieDetailsServiceUnitTest {
 
     @BeforeEach
     fun setUp() {
-        redisContainer = GenericContainer("redis:6.2.11").apply {
-            withExposedPorts(REDIS_PORT)
-            start()
-        }
+        redisContainer =
+            GenericContainer("redis:6.2.11").apply {
+                withExposedPorts(REDIS_PORT)
+                start()
+            }
         val redisHost = redisContainer.host
         val redisPort = redisContainer.getMappedPort(REDIS_PORT)
 
@@ -55,49 +57,52 @@ class MovieDetailsServiceUnitTest {
     }
 
     @Test
-    fun `should fetch movie details and store in cache`() = runBlocking {
-        val movieId = "tt1234567"
-        val omdbResponse = OmdbMovieDetailsResponse("Test Movie", "2024", "Description", "Genre", "Director")
-        val averageRate = InternalRating("8.5", 10)
-        val expectedResponse = MovieDetailsResponse.from(omdbResponse, InternalRating("8.5", 10))
+    fun `should fetch movie details and store in cache`() =
+        runBlocking {
+            val movieId = "tt1234567"
+            val omdbResponse = OmdbMovieDetailsResponse("Test Movie", "2024", "Description", "Genre", "Director")
+            val averageRate = InternalRating("8.5", 10)
+            val expectedResponse = MovieDetailsResponse.from(omdbResponse, InternalRating("8.5", 10))
 
-        coEvery { omdbClient.getMovieDetails(movieId) } returns omdbResponse
-        coEvery { averageRateRepository.getAverageRate(movieId) } returns averageRate
+            coEvery { omdbClient.getMovieDetails(movieId) } returns omdbResponse
+            coEvery { averageRateRepository.getAverageRate(movieId) } returns averageRate
 
-        val response1 = movieDetailsService.getMovieDetails(movieId) // Cache miss
-        val response2 = movieDetailsService.getMovieDetails(movieId) // Cache hit
+            val response1 = movieDetailsService.getMovieDetails(movieId) // Cache miss
+            val response2 = movieDetailsService.getMovieDetails(movieId) // Cache hit
 
-        assertEquals(expectedResponse, response1)
-        assertEquals(expectedResponse, response2)
+            assertEquals(expectedResponse, response1)
+            assertEquals(expectedResponse, response2)
 
-        coVerify(exactly = 1) { omdbClient.getMovieDetails(movieId) }
-        coVerify(exactly = 2) { averageRateRepository.getAverageRate(movieId) }
-    }
+            coVerify(exactly = 1) { omdbClient.getMovieDetails(movieId) }
+            coVerify(exactly = 2) { averageRateRepository.getAverageRate(movieId) }
+        }
 
     @Test
-    fun `should merge internal and external ratings`() = runBlocking {
-        val movieId = "tt7654321"
-        val omdbResponse =
-            OmdbMovieDetailsResponse(
-                "Another Movie",
-                "2022",
-                "Another Description",
-                "Action",
-                "Another Director",
-                ratings =listOf(
-                    Rating("omdb", "6")
+    fun `should merge internal and external ratings`() =
+        runBlocking {
+            val movieId = "tt7654321"
+            val omdbResponse =
+                OmdbMovieDetailsResponse(
+                    "Another Movie",
+                    "2022",
+                    "Another Description",
+                    "Action",
+                    "Another Director",
+                    ratings =
+                        listOf(
+                            Rating("omdb", "6"),
+                        ),
                 )
-            )
 
-        val averageRate = InternalRating("8.5", 10)
+            val averageRate = InternalRating("8.5", 10)
 
-        coEvery { omdbClient.getMovieDetails(movieId) } returns omdbResponse
-        coEvery { averageRateRepository.getAverageRate(movieId) } returns averageRate
+            coEvery { omdbClient.getMovieDetails(movieId) } returns omdbResponse
+            coEvery { averageRateRepository.getAverageRate(movieId) } returns averageRate
 
-        val response = movieDetailsService.getMovieDetails(movieId)
+            val response = movieDetailsService.getMovieDetails(movieId)
 
-        // Assert
-        assertEquals(omdbResponse.title, response.title)
-        assertEquals(response.ratings[0].source, "INTERNAL")
-    }
+            // Assert
+            assertEquals(omdbResponse.title, response.title)
+            assertEquals(response.ratings[0].source, "INTERNAL")
+        }
 }

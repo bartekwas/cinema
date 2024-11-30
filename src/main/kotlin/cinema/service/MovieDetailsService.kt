@@ -8,7 +8,7 @@ import com.bwasik.omdb.OmdbClient
 import com.bwasik.utils.RedisCache
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import java.util.*
+import java.util.UUID
 import kotlin.time.Duration.Companion.hours
 
 private const val NAMESPACE = "OMDB"
@@ -20,20 +20,22 @@ class MovieDetailsService(
     private val averageRateRepository: AverageRateRepository,
     private val cache: RedisCache,
 ) {
-
-    suspend fun getMovieDetails(movieId: String) = coroutineScope {
-        val omdbDetails = async {
-            cache.cached(movieId, NAMESPACE, CACHE_TIME) {
-                omdbClient.getMovieDetails(movieId)
-            }
+    suspend fun getMovieDetails(movieId: String) =
+        coroutineScope {
+            val omdbDetails =
+                async {
+                    cache.cached(movieId, NAMESPACE, CACHE_TIME) {
+                        omdbClient.getMovieDetails(movieId)
+                    }
+                }
+            val internalRates = async { averageRateRepository.getAverageRate(movieId) }
+            MovieDetailsResponse.from(omdbDetails.await(), internalRates.await())
         }
-        val internalRates = async { averageRateRepository.getAverageRate(movieId) }
-        MovieDetailsResponse.from(omdbDetails.await(), internalRates.await())
-    }
 
-
-    fun postMovieRatings(movieRatingRequest: MovieRatingRequest, principalId: UUID) {
+    fun postMovieRatings(
+        movieRatingRequest: MovieRatingRequest,
+        principalId: UUID,
+    ) {
         movieDetailsRepository.postMovieRatings(movieRatingRequest, principalId.toString())
     }
-
 }

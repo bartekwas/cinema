@@ -7,9 +7,11 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.bwasik.security.jwt.JWTConfig
 import com.bwasik.security.user.model.UserRole
-import io.ktor.server.auth.jwt.*
+import io.ktor.server.auth.jwt.JWTCredential
+import io.ktor.server.auth.jwt.JWTPrincipal
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 const val TOKEN_EXPIRATION_TIME = 900_000
 const val USERNAME_CLAIM = "username"
@@ -23,13 +25,19 @@ class JWTService(
     val realm = jwtConfig.realm
 
     val jwtVerifier: JWTVerifier =
-        JWT.require(Algorithm.HMAC256(jwtConfig.secret))
+        JWT
+            .require(Algorithm.HMAC256(jwtConfig.secret))
             .withAudience(jwtConfig.audience)
             .withIssuer(jwtConfig.issuer)
             .build()
 
-    fun createAccessToken(username: String, role: UserRole, userId: UUID): String =
-        JWT.create()
+    fun createAccessToken(
+        username: String,
+        role: UserRole,
+        userId: UUID,
+    ): String =
+        JWT
+            .create()
             .withAudience(jwtConfig.audience)
             .withIssuer(jwtConfig.issuer)
             .withClaim(USERNAME_CLAIM, username)
@@ -38,10 +46,7 @@ class JWTService(
             .withExpiresAt(Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
             .sign(Algorithm.HMAC256(jwtConfig.secret))
 
-
-    fun customValidator(
-        credential: JWTCredential
-    ): JWTPrincipal? =
+    fun customValidator(credential: JWTCredential): JWTPrincipal? =
         credential.takeIf { it.audienceMatches() }?.let {
             JWTPrincipal(credential.payload)
         }
@@ -54,10 +59,7 @@ class JWTService(
             null
         }
 
-
-    private fun JWTCredential.audienceMatches(): Boolean =
-        this.payload.audience.contains(jwtConfig.audience)
+    private fun JWTCredential.audienceMatches(): Boolean = this.payload.audience.contains(jwtConfig.audience)
 }
 
-fun JWTCredential.extractUsername(): String? =
-    this.payload.getClaim(USERNAME_CLAIM).asString()
+fun JWTCredential.extractUsername(): String? = this.payload.getClaim(USERNAME_CLAIM).asString()
