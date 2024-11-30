@@ -10,6 +10,7 @@
 1. There is daily limit od 1_000 calls towards OMDb API
 
 ## Architectural decisions records
+
 **001 All customer-facing endpoints must be available only through CloudFront** 
 * that protects system against DDOS attacks 
 * `fetch details about one of their movies` endpoint is very static endpoint and can be cached on CDN cache for a very long time in order to reduce number of cals towards 3rd party API and reduce number of calls that are reaching the cinema-service
@@ -28,6 +29,14 @@
   * **User Role** for customers
   * **Admin role** for cinema owners
 * System handles user registration, stores the user data and hashed password.
+
+**005 Asynchronous processing of movies rates**
+* In order to reduce processing time when fetching movies' rates, calculation of average rate per movie was moved to the background, asynchronous job.
+* Job calculates new average per movie every X minutes (configurable)
+* After submitting new rate by the customer, there might be a period of maximum X minutes, where internal rate that is served to all customers might be stale.
+* Saving the rates (even though without calculating new average) is synchronous. In the future it might be also split into async job - like queue that takes the new rate and another job that saves it into the db later.
+* Queue aproach was not implemented, as is looks like premature optimisation.
+* 
 
 # High-level architecture of the system
 

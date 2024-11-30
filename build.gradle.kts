@@ -26,16 +26,14 @@ dependencies {
     implementation("io.insert-koin:koin-core:4.0.0")
     implementation("com.auth0:java-jwt:4.4.0")
 
+    implementation("io.lettuce:lettuce-core:6.5.0.RELEASE")
     implementation("org.jetbrains.exposed:exposed-core:0.41.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
     implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
 
     implementation("org.mindrot:jbcrypt:0.4")
-
-    // PostgreSQL driver
     implementation("org.postgresql:postgresql:42.7.4")
-
     implementation("ch.qos.logback:logback-classic:1.4.11")
 
     testImplementation("io.ktor:ktor-server-tests:3.0.1")

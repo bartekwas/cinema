@@ -1,6 +1,5 @@
 package com.bwasik.koin
 
-import com.bwasik.cinema.model.http.MovieRatingRequest
 import com.bwasik.cinema.repository.AverageRateRepository
 import com.bwasik.cinema.repository.MovieDetailsRepository
 import com.bwasik.cinema.repository.MovieSchedulesRepository
@@ -9,12 +8,15 @@ import com.bwasik.cinema.service.MovieScheduleService
 import com.bwasik.cinema.service.RateAggregatorService
 import com.bwasik.omdb.KtorClientProvider
 import com.bwasik.omdb.OmdbClient
+import com.bwasik.utils.RedisCache
 import com.bwasik.security.jwt.JWTConfig
 import com.bwasik.security.jwt.service.JWTService
 import com.bwasik.security.user.respository.UserRepository
 import com.bwasik.security.user.service.UserService
 import com.bwasik.utils.DatabaseFactory
 import com.bwasik.utils.envVariable
+import io.lettuce.core.RedisClient
+import io.lettuce.core.api.StatefulRedisConnection
 import org.koin.dsl.module
 
 val userModule = module {
@@ -61,6 +63,20 @@ val dbModule = module {
     }
 }
 
+val redisModule = module {
+    single {
+        RedisClient.create("redis.url".envVariable())
+    }
+    single<StatefulRedisConnection<String, String>> {
+        get<RedisClient>().connect()
+    }
+    single {
+        RedisCache(
+            redisConnection = get()
+        )
+    }
+}
+
 val cinemaModule = module {
     single {
         MovieSchedulesRepository
@@ -79,7 +95,8 @@ val cinemaModule = module {
     single {
         MovieDetailsService(
             omdbClient = get(),
-            movieDetailsRepository = get()
+            movieDetailsRepository = get(),
+            cache = get()
         )
     }
     single {
