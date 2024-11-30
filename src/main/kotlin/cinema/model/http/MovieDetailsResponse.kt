@@ -39,7 +39,7 @@ data class MovieDetailsResponse(
             internalRating: InternalRating? = null,
         ): MovieDetailsResponse =
             MovieDetailsResponse(
-                title = omdb.title,
+                title = omdb.year,
                 year = omdb.year,
                 rated = omdb.rated,
                 released = omdb.released,
