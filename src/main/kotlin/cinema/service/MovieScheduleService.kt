@@ -3,7 +3,6 @@ package com.bwasik.cinema.service
 import com.bwasik.cinema.model.http.MovieWithSchedules
 import com.bwasik.cinema.repository.MovieSchedulesRepository
 import com.bwasik.utils.RedisCache
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private const val NAMESPACE = "SCHEDULES"

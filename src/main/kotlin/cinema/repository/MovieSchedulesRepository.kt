@@ -17,7 +17,7 @@ class MovieSchedulesRepository {
     fun updateMovieWithSchedules(movieSchedule: MovieWithSchedules) {
         transaction {
             val foundMovie = Movies.select { Movies.id eq movieSchedule.id }.singleOrNull()
-            if(foundMovie == null){
+            if (foundMovie == null) {
                 Movies.insert {
                     it[id] = movieSchedule.id
                     it[title] = movieSchedule.title
