@@ -16,15 +16,18 @@ import java.time.ZoneId
 class MovieSchedulesRepository {
     fun updateMovieWithSchedules(movieSchedule: MovieWithSchedules) {
         transaction {
-            Movies.select { Movies.id eq movieSchedule.id }.singleOrNull()?.let {
+            val foundMovie = Movies.select { Movies.id eq movieSchedule.id }.singleOrNull()
+            if(foundMovie == null){
+                Movies.insert {
+                    it[id] = movieSchedule.id
+                    it[title] = movieSchedule.title
+                }
+            } else {
                 movieSchedule.title?.let { movieTitle ->
                     Movies.update({ Movies.id eq movieSchedule.id }) {
                         it[title] = movieTitle
                     }
                 }
-            } ?: Movies.insert {
-                it[id] = movieSchedule.id
-                it[title] = movieSchedule.title
             }
 
             val existingSchedules =
