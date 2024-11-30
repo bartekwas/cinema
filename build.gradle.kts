@@ -36,8 +36,19 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("ch.qos.logback:logback-classic:1.4.11")
 
-    testImplementation("io.ktor:ktor-server-tests:3.0.1")
+    testImplementation("org.testcontainers:postgresql:1.20.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+    testImplementation("org.testcontainers:testcontainers:1.20.4")
+    testImplementation("io.mockk:mockk:1.13.13")
+    testImplementation("io.insert-koin:koin-test:4.0.0")
+    testImplementation("io.insert-koin:koin-ktor:4.0.0")
+    testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:2.0.2")
+    testImplementation("io.kotest.extensions:kotest-extensions-wiremock:3.0.1")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
+    testImplementation("io.ktor:ktor-server-test-host:2.1.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.10")
+    testImplementation("io.kotest:kotest-runner-junit5:5.5.5")
+    testImplementation("io.kotest:kotest-assertions-core:5.5.5")
     testImplementation(kotlin("test"))
 }
 

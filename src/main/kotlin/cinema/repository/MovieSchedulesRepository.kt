@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.ZoneId
 
-object MovieSchedulesRepository {
+class MovieSchedulesRepository {
     fun updateMovieWithSchedules(movieSchedule: MovieWithSchedules) {
         transaction {
             Movies.select { Movies.id eq movieSchedule.id }.singleOrNull()?.let {

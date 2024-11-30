@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-object AverageRateRepository {
+class AverageRateRepository {
 
     fun calculateAndSaveAverageRates() {
         transaction {

@@ -79,13 +79,13 @@ val redisModule = module {
 
 val cinemaModule = module {
     single {
-        MovieSchedulesRepository
+        MovieSchedulesRepository()
     }
     single {
-        MovieDetailsRepository
+        MovieDetailsRepository()
     }
     single {
-        AverageRateRepository
+        AverageRateRepository()
     }
     single {
         RateAggregatorService(
@@ -101,7 +101,8 @@ val cinemaModule = module {
     }
     single {
         MovieScheduleService(
-            movieScheduleRepository = get()
+            movieScheduleRepository = get(),
+            cache = get()
         )
     }
 }
