@@ -24,7 +24,7 @@ class MovieDetailsService(
         coroutineScope {
             val omdbDetails =
                 async {
-                    cache.cached(movieId, NAMESPACE, CACHE_TIME) {
+                        cache.cached(movieId, NAMESPACE, CACHE_TIME) {
                         omdbClient.getMovieDetails(movieId)
                     }
                 }
