@@ -23,6 +23,7 @@ val ktorVersion = "3.0.1"
 val kotestVersion = "5.5.5"
 val koinVersion = "4.0.0"
 val testcontainersVersion = "1.20.4"
+val resilience4jVersion = "1.7.1"
 
 dependencies {
     // Ktor dependencies
@@ -37,6 +38,9 @@ dependencies {
     implementation("io.ktor:ktor-server-openapi:$ktorVersion")
     implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.54")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4jVersion")
+    implementation("io.github.resilience4j:resilience4j-circuitbreaker:$resilience4jVersion")
+    implementation("io.github.resilience4j:resilience4j-retry:$resilience4jVersion")
 
     // Koin for Dependency Injection
     implementation("io.insert-koin:koin-ktor:$koinVersion")

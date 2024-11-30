@@ -14,12 +14,13 @@ class OmdbClient(
 
     suspend fun getMovieDetails(movieId: String): OmdbMovieDetailsResponse {
         logger.info("Calling OMBD for movie $movieId")
-        return clientProvider.client
-            .get("$baseUrl/") {
+        return clientProvider.executeRequest {
+            get("$baseUrl/") {
                 url {
                     parameters.append("apikey", apiKey)
                     parameters.append("i", movieId)
                 }
             }.body()
+        }
     }
 }
