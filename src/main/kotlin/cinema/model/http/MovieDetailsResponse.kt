@@ -2,8 +2,8 @@ package com.bwasik.cinema.model.http
 
 import com.bwasik.omdb.model.OmdbMovieDetailsResponse
 import kotlinx.serialization.SerialName
-import com.bwasik.omdb.model.Rating as OmdbRating
 import kotlinx.serialization.Serializable
+import com.bwasik.omdb.model.Rating as OmdbRating
 
 @Serializable
 data class MovieDetailsResponse(
@@ -31,11 +31,14 @@ data class MovieDetailsResponse(
     val production: String? = null,
     val website: String? = null,
     val response: String? = null,
-    val ratings: List<Rating> = emptyList()
-){
+    val ratings: List<Rating> = emptyList(),
+) {
     companion object {
-        fun from(omdb: OmdbMovieDetailsResponse, internalRating: InternalRating? = null): MovieDetailsResponse {
-            return MovieDetailsResponse(
+        fun from(
+            omdb: OmdbMovieDetailsResponse,
+            internalRating: InternalRating? = null,
+        ): MovieDetailsResponse =
+            MovieDetailsResponse(
                 title = omdb.title,
                 year = omdb.year,
                 rated = omdb.rated,
@@ -60,30 +63,27 @@ data class MovieDetailsResponse(
                 production = omdb.production,
                 response = omdb.response,
                 website = omdb.website,
-                boxOffice = omdb.boxOffice
+                boxOffice = omdb.boxOffice,
             )
-        }
     }
 }
 
-
-sealed interface Rating{
+sealed interface Rating {
     val source: String
     val value: String
 }
 
 @Serializable
-
 @SerialName("EXTERNAL")
 data class ExternalRating(
     override val source: String,
-    override val value: String
+    override val value: String,
 ) : Rating {
-    companion object{
+    companion object {
         fun from(rating: OmdbRating): ExternalRating =
             ExternalRating(
                 source = rating.source,
-                value = rating.value
+                value = rating.value,
             )
     }
 }
@@ -93,6 +93,6 @@ data class ExternalRating(
 data class InternalRating(
     override val value: String,
     val ratesCount: Int,
-): Rating {
+) : Rating {
     override val source = "INTERNAL"
 }

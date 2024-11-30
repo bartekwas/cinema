@@ -1,7 +1,5 @@
 package com.bwasik.security.user.service
 
-import com.auth0.jwt.exceptions.JWTVerificationException
-import com.auth0.jwt.interfaces.DecodedJWT
 import com.bwasik.security.jwt.model.http.LoginRequest
 import com.bwasik.security.jwt.model.http.LoginResponse
 import com.bwasik.security.jwt.service.JWTService
@@ -14,20 +12,19 @@ import com.bwasik.utils.safeValueOf
 import com.bwasik.utils.toUUID
 import org.mindrot.jbcrypt.BCrypt
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.UUID
 
 class UserService(
     private val userRepository: UserRepository,
-    private val jwtService: JWTService
+    private val jwtService: JWTService,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun findAll(): List<UserCreationResponse> =
-        userRepository.findAll().map { it.toUserCreationResponse() }
+    fun findAll(): List<UserCreationResponse> = userRepository.findAll().map { it.toUserCreationResponse() }
 
     fun findById(id: String): User? =
         userRepository.findById(
-            id = id.toUUID()
+            id = id.toUUID(),
         )
 
     fun insert(userRequest: UserCreationRequest): User? {
@@ -40,31 +37,30 @@ class UserService(
 
     fun authenticate(loginRequest: LoginRequest): LoginResponse? {
         return userRepository.findById(loginRequest.username.toUUID())?.let { user ->
-            if(!verifyPassword(loginRequest.password, user.password)) return null
+            if (!verifyPassword(loginRequest.password, user.password)) return null
             LoginResponse(jwtService.createAccessToken(user.username, user.role, user.id))
         }
     }
 }
 
-private fun UserCreationRequest.toUserModel(): User  =
+private fun UserCreationRequest.toUserModel(): User =
     User(
         id = UUID.nameUUIDFromBytes(this.username.toByteArray()),
         username = this.username,
         password = hashPassword(this.password),
-        role = this.role.safeValueOf<UserRole>() ?: UserRole.USER
+        role = this.role.safeValueOf<UserRole>() ?: UserRole.USER,
     )
 
 private fun User.toUserCreationResponse(): UserCreationResponse =
     UserCreationResponse(
         id = this.id,
         username = this.username,
-        role = this.role.name
+        role = this.role.name,
     )
 
-fun hashPassword(plainPassword: String): String {
-    return BCrypt.hashpw(plainPassword, BCrypt.gensalt())
-}
+fun hashPassword(plainPassword: String): String = BCrypt.hashpw(plainPassword, BCrypt.gensalt())
 
-fun verifyPassword(plainPassword: String, hashedPassword: String): Boolean {
-    return BCrypt.checkpw(plainPassword, hashedPassword)
-}
+fun verifyPassword(
+    plainPassword: String,
+    hashedPassword: String,
+): Boolean = BCrypt.checkpw(plainPassword, hashedPassword)

@@ -2,7 +2,7 @@ package com.bwasik.security.user.model.http
 
 import com.bwasik.utils.UUIDSerializer
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.UUID
 
 @Serializable
 data class UserCreationResponse(

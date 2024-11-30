@@ -8,8 +8,8 @@ import java.math.BigDecimal
 data class MovieRatingRequest(
     val movieId: String,
     @Serializable(with = BigDecimalSerializer::class)
-    val rate: BigDecimal
-){
+    val rate: BigDecimal,
+) {
     init {
         require(rate > BigDecimal.ZERO) { "Rating must be greater than zero" }
         require(rate <= BigDecimal.valueOf(10)) { "Rating must be max 10" }

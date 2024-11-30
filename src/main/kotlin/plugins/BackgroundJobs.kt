@@ -1,7 +1,7 @@
 package com.bwasik.plugins
 
 import com.bwasik.cinema.service.RateAggregatorService
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 import org.koin.ktor.ext.inject
 
 fun Application.setupBackgroundJobs() {

@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 
 class RedisCache(
     redisConnection: StatefulRedisConnection<String, String>,
-    val json: Json = Json { ignoreUnknownKeys = true }
+    val json: Json = Json { ignoreUnknownKeys = true },
 ) {
     val redis: RedisCommands<String, String> = redisConnection.sync()
 
@@ -15,7 +15,7 @@ class RedisCache(
         key: String,
         namespace: String? = null,
         cacheTime: Long,
-        block: () -> T
+        block: () -> T,
     ): T {
         val namespacedKey = listOfNotNull(namespace, key).joinToString(":")
         redis.get(namespacedKey)?.let { cachedValue ->

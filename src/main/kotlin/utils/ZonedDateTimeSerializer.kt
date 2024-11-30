@@ -14,11 +14,12 @@ object ZonedDateTimeSerializer : KSerializer<ZonedDateTime> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ZonedDateTime", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: ZonedDateTime) {
+    override fun serialize(
+        encoder: Encoder,
+        value: ZonedDateTime,
+    ) {
         encoder.encodeString(value.format(formatter))
     }
 
-    override fun deserialize(decoder: Decoder): ZonedDateTime {
-        return ZonedDateTime.parse(decoder.decodeString(), formatter)
-    }
+    override fun deserialize(decoder: Decoder): ZonedDateTime = ZonedDateTime.parse(decoder.decodeString(), formatter)
 }

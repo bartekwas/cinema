@@ -7,9 +7,10 @@ import com.bwasik.cinema.service.MovieScheduleService
 import com.bwasik.security.routing.loginRoute
 import com.bwasik.security.routing.userRoute
 import com.bwasik.security.user.service.UserService
-import io.ktor.server.application.*
-import io.ktor.server.plugins.openapi.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.Application
+import io.ktor.server.plugins.openapi.openAPI
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import io.swagger.codegen.v3.generators.html.StaticHtmlCodegen
 import org.koin.ktor.ext.inject
 
@@ -18,13 +19,13 @@ fun Application.installRouting() {
     val movieDetailsService: MovieDetailsService by inject()
     val movieScheduleService: MovieScheduleService by inject()
     routing {
-        route("api"){
+        route("api") {
             loginRoute(userService)
             userRoute(userService)
             movieSchedulesRoute(movieScheduleService = movieScheduleService)
             movieDetailsRoute(movieDetailsService = movieDetailsService)
         }
-        openAPI(path="openapi", swaggerFile = "openapi/documentation.yaml") {
+        openAPI(path = "openapi", swaggerFile = "openapi/documentation.yaml") {
             codegen = StaticHtmlCodegen()
         }
     }

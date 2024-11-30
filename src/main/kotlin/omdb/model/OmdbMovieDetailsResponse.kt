@@ -29,5 +29,5 @@ data class OmdbMovieDetailsResponse(
     @SerialName("BoxOffice") val boxOffice: String? = null,
     @SerialName("Production") val production: String? = null,
     @SerialName("Website") val website: String? = null,
-    @SerialName("Response") val response: String? = null
+    @SerialName("Response") val response: String? = null,
 )
